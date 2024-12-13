@@ -14,13 +14,13 @@ This tool helps in breaking not well secured endpoint with 403 status code
 2. Type this command : ./403-Unlocker [But_The_Target_Here] [Option]
 
 ### Options 
--c      | For combining multiple techniques together at once 
--p      | For URL path fuzzing 
--h      | For request header fuzzing 
--u      | For UserAgent header fuzzing 
---all   | For doing all the above 
---help  | To print the help menu
--v      | To not show the testing progress
+- -c      | For combining multiple techniques together at once 
+- -p      | For URL path fuzzing 
+- -h      | For request header fuzzing 
+- -u      | For UserAgent header fuzzing 
+- --all   | For doing all the above 
+- --help  | To print the help menu
+- -v      | To not show the testing progress
 
 ## How to install it : 
 1. Make sure you have python3 installed on your machine 
