@@ -180,10 +180,10 @@ def Path_Fuzzing() :
 
 def Compound_Commands() :
     print( Fore.BLUE +"[+] Trying Compound Commands..."+Style.RESET_ALL)
+    url = target
+    url2 = target
     if target[len(target)-4:len(target)] != 'com/' and target[len(target)-3:len(target)] != 'com':
         file = target[target.rfind('/')+1:] 
-        url = target
-        url2 = target
         if file[0] in encoding :
             new_file = file.replace(file[0],encoding[file[0]])
             new_file2 = file.replace(file[0],double_encoding[file[0]])
