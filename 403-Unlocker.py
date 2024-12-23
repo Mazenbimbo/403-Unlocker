@@ -187,7 +187,6 @@ def Compound_Commands(target) :
     print( Fore.BLUE +"[+] Trying Compound Commands..."+Style.RESET_ALL)
     url = target
     url2 = target
-    # https://google.org/file.txt
     if target.count('/') > 2 :
         file = target[target.rfind('/')+1:] 
         if file[0] in encoding :
@@ -213,12 +212,12 @@ def Compound_Commands(target) :
                     print(f"{Fore.GREEN}[ 200 ]    curl -v -i -X {method} --http{version} {url2}{Style.RESET_ALL}")
                 else :
                     if '-v' not in sys.argv :
-                        print(f"{Fore.RED}[ {status_code1} ]    curl -v -i -X {method} --http{version} {url}{Style.RESET_ALL}")
+                        print(f"{Fore.RED}[ {status_code1} ]    curl -v -i -X {method} --http{version} {url2}{Style.RESET_ALL}")
                 if status_code2 == "200" :
-                    print(f"{Fore.GREEN}[ 200 ]    curl -v -i -X {method} --http{version} -H 'Referer:{url}' {url}{Style.RESET_ALL}")
+                    print(f"{Fore.GREEN}[ 200 ]    curl -v -i -X {method} --http{version} -H 'Referer: {url}' {url}{Style.RESET_ALL}")
                 else :
                     if '-v' not in sys.argv :
-                        print(f"{Fore.RED}[ {status_code2} ]    curl -v -i -X {method} --http{version} {url}{Style.RESET_ALL}")
+                        print(f"{Fore.RED}[ {status_code2} ]    curl -v -i -X {method} --http{version} -H 'Referer: {url}' {url}{Style.RESET_ALL}")
             except Exception as e:
                 print(e) 
 
