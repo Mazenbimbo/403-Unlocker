@@ -12,6 +12,8 @@ raw_headers = open("raw_headers.txt","r")
 user_agents = open("user-agents_enum.txt","r")
 url_paths = open("url_fuzzing.txt","r")
 target = sys.argv[1]
+if target[len(target)-1] == '/' : 
+        target = target[:len(target)-1]
 methods = ["GET","HEAD","POST","PUT","DELETE","CONNECT","OPTIONS","TRACE","PATCH","INVENTED","HACK"]
 HTTP_versions = ["1.0","1.1","2","3"]
 response_headers = {}
@@ -140,19 +142,22 @@ def Path_Fuzzing() :
         before,after = url_path.split("admin",1) 
         url = target
         url1 = target
-        if url[len(url)-4:len(url)] == 'com/' or url[len(url)-3:len(url)] == 'com':
-            try :
-                url = url + after 
-                response = requests.get(url,timeout=5)
-                content_length = response.headers.get("Content-Length")
-                if response.status_code == 200 :
-                    print(f"{Fore.GREEN}[ {response.status_code} ]   {url} | length : [ {content_length} ]{Style.RESET_ALL}")
-                    print(f"{Fore.YELLOW}Access this URL : {url} using curl {Style.RESET_ALL}")
-                else : 
-                    if '-v' not in sys.argv :
-                        print(f"{Fore.RED}[ {response.status_code} ]   {url} | length : [ {content_length} ]{Style.RESET_ALL}")
-            except Exception as e:
-                print(f"{e} {url_path}")
+        if target.count('/') == 2:
+            if len(after)== 0 or after[0] != "/":
+                continue
+            else :
+                try :
+                    url = url + after
+                    response = requests.get(url,timeout=5)
+                    content_length = response.headers.get("Content-Length")
+                    if response.status_code == 200 :
+                        print(f"{Fore.GREEN}[ {response.status_code} ]   {url} | length : [ {content_length} ]{Style.RESET_ALL}")
+                        print(f"{Fore.YELLOW}Access this URL : {url} using curl {Style.RESET_ALL}")
+                    else : 
+                        if '-v' not in sys.argv :
+                            print(f"{Fore.RED}[ {response.status_code} ]   {url} | length : [ {content_length} ]{Style.RESET_ALL}")
+                except Exception as e:
+                    print(f"{e} {url_path}")
 
         else :
             try :
@@ -178,11 +183,12 @@ def Path_Fuzzing() :
             except Exception as e:
                 print(f"{e} {url_path}")
 
-def Compound_Commands() :
+def Compound_Commands(target) :
     print( Fore.BLUE +"[+] Trying Compound Commands..."+Style.RESET_ALL)
     url = target
     url2 = target
-    if target[len(target)-4:len(target)] != 'com/' and target[len(target)-3:len(target)] != 'com':
+    # https://google.org/file.txt
+    if target.count('/') > 2 :
         file = target[target.rfind('/')+1:] 
         if file[0] in encoding :
             new_file = file.replace(file[0],encoding[file[0]])
@@ -195,17 +201,24 @@ def Compound_Commands() :
             curl_output2 = subprocess.run(["curl","-v","-i","-X",method,f"--http{version}", url2],capture_output=True,text=True)
             curl_output3 = subprocess.run(["curl","-v","-i","-X",method,f"--http{version}","-H",f"Referer: {url}",url],capture_output=True,text=True)
             try  :
-                if " 200 " in curl_output.stdout :
+                status_code = curl_output.stdout[curl_output.stdout.find(" ")+1:curl_output.stdout.find(" ")+4]
+                status_code1 = curl_output2.stdout[curl_output2.stdout.find(" ")+1:curl_output2.stdout.find(" ")+4]
+                status_code2 = curl_output3.stdout[curl_output3.stdout.find(" ")+1:curl_output3.stdout.find(" ")+4]
+                if status_code == "200" :
                     print(f"{Fore.GREEN}[ 200 ]    curl -v -i -X {method} --http{version} {url}{Style.RESET_ALL}")
-                elif " 200 " in curl_output2.stdout :
-                    print(f"{Fore.GREEN}[ 200 ]    curl -v -i -X {method} --http{version} {url2}{Style.RESET_ALL}")
-                elif " 200 " in curl_output3.stdout :
-                    print(f"{Fore.GREEN}[ 200 ]    curl -v -i -X {method} --http{version} -H 'Referer:{url}' {url}{Style.RESET_ALL}")
-                else : 
+                else :
                     if '-v' not in sys.argv :
-                        print(f"{Fore.RED}[ 403 ]    curl -v -i -X {method} --http{version} {url}{Style.RESET_ALL}")
-                        print(f"{Fore.RED}[ 403 ]    curl -v -i -X {method} --http{version} {url2}{Style.RESET_ALL}")
-                        print(f"{Fore.RED}[ 403 ]    curl -v -i -X {method} --http{version} -H 'Referer:{url}' {url}{Style.RESET_ALL}")
+                        print(f"{Fore.RED}[ {status_code} ]    curl -v -i -X {method} --http{version} {url}{Style.RESET_ALL}")
+                if status_code1 == "200" :
+                    print(f"{Fore.GREEN}[ 200 ]    curl -v -i -X {method} --http{version} {url2}{Style.RESET_ALL}")
+                else :
+                    if '-v' not in sys.argv :
+                        print(f"{Fore.RED}[ {status_code1} ]    curl -v -i -X {method} --http{version} {url}{Style.RESET_ALL}")
+                if status_code2 == "200" :
+                    print(f"{Fore.GREEN}[ 200 ]    curl -v -i -X {method} --http{version} -H 'Referer:{url}' {url}{Style.RESET_ALL}")
+                else :
+                    if '-v' not in sys.argv :
+                        print(f"{Fore.RED}[ {status_code2} ]    curl -v -i -X {method} --http{version} {url}{Style.RESET_ALL}")
             except Exception as e:
                 print(e) 
 
@@ -247,4 +260,4 @@ else :
     if '-m' in sys.argv or '--all' in sys.argv:
         Method_Fuzzing()
     if '-c' in sys.argv or '--all' in sys.argv:
-        Compound_Commands()
+        Compound_Commands(target)
