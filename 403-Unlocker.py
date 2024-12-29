@@ -15,7 +15,7 @@ target = sys.argv[1]
 if target[len(target)-1] == '/' : 
         target = target[:len(target)-1]
 methods = ["GET","HEAD","POST","PUT","DELETE","CONNECT","OPTIONS","TRACE","PATCH","INVENTED","HACK"]
-HTTP_versions = ["1.0","1.1","2","3"]
+HTTP_versions = ["2","3"]
 response_headers = {}
 encoding = {
     'a': '%61', 'b': '%62', 'c': '%63', 'd': '%64', 'e': '%65',
